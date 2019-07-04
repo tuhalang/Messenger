@@ -1,7 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
-	
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
-	<!-- TODO Add Nodes -->
-</BorderPane>
+
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="767.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefHeight="449.0" prefWidth="238.0" style="-fx-border-width: 0 1 0 0; -fx-border-color: white  gray white;">
+         <children>
+            <HBox prefHeight="44.0" prefWidth="238.0" style="-fx-brder-color: ight;">
+               <children>
+                  <Pane prefHeight="44.0" prefWidth="44.0">
+                     <children>
+                        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="7.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../img/icons8-settings-50.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+                  <Label alignment="CENTER" prefHeight="44.0" prefWidth="150.0" text="Messenger" />
+                  <Pane prefHeight="44.0" prefWidth="44.0">
+                     <children>
+                        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="8.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../img/one.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+            <TextField alignment="CENTER" prefHeight="35.0" prefWidth="238.0" promptText="Tìm kiếm trên messenger" style="-fx-background-color: #E6E6FA;" />
+            <ListView prefHeight="373.0" prefWidth="238.0" style="-fx-background-color: -fx-control-inner-background;" />
+         </children>
+      </VBox>
+      <VBox prefHeight="449.0" prefWidth="528.0">
+         <children>
+            <HBox prefHeight="44.0" prefWidth="546.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="42.0" prefWidth="502.0" text="Label" />
+                  <ImageView fitHeight="44.0" fitWidth="44.0" opacity="0.85" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/letter-i-icon-png-3.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <ListView prefHeight="369.0" prefWidth="355.0" style="-fx-background-color: -fx-control-inner-background; -fx-border-color: gray white gray; -fx-border-width: 1 0 1 0;" />
+            <HBox prefHeight="44.0" prefWidth="528.0">
+               <children>
+                  <TextField prefHeight="44.0" prefWidth="484.0" promptText="  Nhập tin nhắn" style="-fx-background-color: -fx-control-inner-background;" />
+                  <Pane prefHeight="40.0" prefWidth="44.0">
+                     <children>
+                        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="9.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" style="-fx-blend-mode: red;">
+                           <image>
+                              <Image url="@../../img/like.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</HBox>
