@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="257.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="login.logInController">
+   <children>
+      <Label alignment="CENTER" prefHeight="49.0" prefWidth="247.0" text="Log in">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Pane prefHeight="132.0" prefWidth="250.0">
+         <children>
+            <TextField fx:id="tfUsername" layoutX="40.0" layoutY="23.0" prefHeight="32.0" prefWidth="170.0" />
+            <PasswordField fx:id="pfPassword" layoutX="40.0" layoutY="78.0" prefHeight="32.0" prefWidth="170.0" />
+            <Label layoutX="40.0" layoutY="7.0" prefHeight="15.0" prefWidth="73.0" text="Username" />
+            <Label layoutX="40.0" layoutY="57.0" prefHeight="15.0" prefWidth="73.0" text="Password" />
+         </children>
+      </Pane>
+      <Pane prefHeight="70.0" prefWidth="250.0">
+         <children>
+            <Button fx:id="buttonLogin" layoutX="86.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="80.0" text="Log in" />
+            <Label fx:id="register" layoutX="73.0" layoutY="49.0" prefHeight="15.0" prefWidth="105.0" text="Don't account ?" />
+         </children>
+      </Pane>
+   </children>
+</VBox>
