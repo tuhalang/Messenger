@@ -10,6 +10,7 @@ public class Message implements Serializable{
 	private long sourseId;
 	private long targetId;
 	private String content;
+	private String image;
 	
 	public long getMessageId() {
 		return messageId;
@@ -35,13 +36,19 @@ public class Message implements Serializable{
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
 	@Override
 	public String toString() {
 		return "{"
 				+"\"sourseId\":"+sourseId+","
 				+"\"targetId\":"+targetId+","
-				+"\"content\":\""+targetId+"\""
+				+"\"content\":\""+targetId+"\","
+				+"\"image\":\""+image+"\""
 				+ "}";
 	}
 	
