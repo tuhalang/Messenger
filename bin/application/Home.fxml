@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="767.0" xmlns="http://javafx.com/javafx/8" 
-xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="767.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
    <children>
       <VBox prefHeight="449.0" prefWidth="238.0" style="-fx-border-width: 0 1 0 0; -fx-border-color: white  gray white;">
          <children>
@@ -36,7 +35,7 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
                   </Pane>
                </children>
             </HBox>
-            <TextField fx:id="findUser" alignment="CENTER" prefHeight="35.0" prefWidth="238.0" promptText="Tìm kiếm trên messenger" style="-fx-background-color: #E6E6FA;" />
+            <TextField fx:id="findUser" prefHeight="35.0" prefWidth="238.0" promptText="Tìm kiếm trên messenger" style="-fx-background-color: #E6E6FA;" />
             <ListView fx:id="listFriend" prefHeight="373.0" prefWidth="238.0" style="-fx-background-color: -fx-control-inner-background;" />
          </children>
       </VBox>
@@ -58,7 +57,7 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
                   <TextField fx:id="enterMessage" prefHeight="44.0" prefWidth="484.0" promptText="  Nhập tin nhắn" style="-fx-background-color: -fx-control-inner-background;" />
                   <Pane fx:id="like" prefHeight="40.0" prefWidth="44.0">
                      <children>
-                        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="9.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" style="-fx-blend-mode: red;">
+                        <ImageView fitHeight="26.0" fitWidth="26.0" layoutX="9.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../img/like.png" />
                            </image>
