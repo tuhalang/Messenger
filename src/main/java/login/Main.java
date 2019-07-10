@@ -1,5 +1,5 @@
-package application;
-	
+package login;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,7 +14,7 @@ public class Main extends Application {
 		try {
 //			HBox root = (HBox)FXMLLoader.load(getClass().getResource("Home.fxml"));
 //			Scene scene = new Scene(root,767,449);
-			VBox root =(VBox)FXMLLoader.load(getClass().getResource("/login/logIn.fxml"));
+			VBox root =(VBox)FXMLLoader.load(getClass().getResource("logIn.fxml"));
 			Scene scene=new Scene(root,257,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);

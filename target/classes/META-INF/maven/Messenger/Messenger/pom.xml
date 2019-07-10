@@ -24,7 +24,12 @@
 			<artifactId>bson</artifactId>
 			<version>3.9.1</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.mongodb/bson -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>3.4.1</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
 		<dependency>
 			<groupId>org.openjfx</groupId>

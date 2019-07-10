@@ -1,28 +1,47 @@
 package model;
 
 import java.io.Serializable;
+import java.net.UnknownHostException;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
+
+import service.connectMongodb;
 
 public class Message implements Serializable{
 
 	private static final long serialVersionUID = 1812908819029669642L;
 	
 	private long messageId;
-	private long sourseId;
+	private long sourceId;
 	private long targetId;
 	private String content;
 	private String image;
 	
+	public Message() {
+		super();
+	}
+	public Message(long messageId, long sourceId, long targetId, String content, String image) {
+		super();
+		this.messageId = messageId;
+		this.sourceId = sourceId;
+		this.targetId = targetId;
+		this.content = content;
+		this.image = image;
+	}
 	public long getMessageId() {
 		return messageId;
 	}
 	public void setMessageId(long messageId) {
 		this.messageId = messageId;
 	}
-	public long getSourseId() {
-		return sourseId;
+	public long getSourceId() {
+		return sourceId;
 	}
-	public void setSourseId(long sourseId) {
-		this.sourseId = sourseId;
+	public void setsourceId(long sourceId) {
+		this.sourceId = sourceId;
 	}
 	public long getTargetId() {
 		return targetId;
@@ -45,7 +64,7 @@ public class Message implements Serializable{
 	@Override
 	public String toString() {
 		return "{"
-				+"\"sourseId\":"+sourseId+","
+				+"\"sourceId\":"+sourceId+","
 				+"\"targetId\":"+targetId+","
 				+"\"content\":\""+targetId+"\","
 				+"\"image\":\""+image+"\""
@@ -60,6 +79,22 @@ public class Message implements Serializable{
 	@Override
 	public int hashCode() {
 		return (int)messageId;
+	}
+	
+	public void addMessageToDatabase(Message m) {
+		MongoClient mongo;
+		try {
+			mongo = connectMongodb.getMongoClient_1();
+			DB db=(DB) mongo.getDB("demo");
+			DBCollection dept=db.getCollection("message");
+			BasicDBObject document = new BasicDBObject();
+			document.put("sourceId", m.getSourceId());
+			document.put("targetId", m.getTargetId());
+			dept.insert(document);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
