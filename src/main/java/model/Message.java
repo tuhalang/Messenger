@@ -23,9 +23,8 @@ public class Message implements Serializable{
 	public Message() {
 		super();
 	}
-	public Message(long messageId, long sourceId, long targetId, String content, String image) {
+	public Message(long sourceId, long targetId, String content, String image) {
 		super();
-		this.messageId = messageId;
 		this.sourceId = sourceId;
 		this.targetId = targetId;
 		this.content = content;
@@ -79,22 +78,6 @@ public class Message implements Serializable{
 	@Override
 	public int hashCode() {
 		return (int)messageId;
-	}
-	
-	public void addMessageToDatabase(Message m) {
-		MongoClient mongo;
-		try {
-			mongo = connectMongodb.getMongoClient_1();
-			DB db=(DB) mongo.getDB("demo");
-			DBCollection dept=db.getCollection("message");
-			BasicDBObject document = new BasicDBObject();
-			document.put("sourceId", m.getSourceId());
-			document.put("targetId", m.getTargetId());
-			dept.insert(document);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

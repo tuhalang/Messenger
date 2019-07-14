@@ -18,82 +18,101 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import login.client;
 import model.User;
+import service.ConnectToServer;
 import service.checkUser;
 
-public class registerController implements Initializable{
+public class registerController implements Initializable {
 	@FXML
-	private TextField tfEmail=new TextField();
-	@FXML 
-	private TextField tfUsername =new TextField();
+	private TextField tfEmail = new TextField();
 	@FXML
-	private PasswordField pfPassword=new PasswordField();
+	private TextField tfUsername = new TextField();
 	@FXML
-	private PasswordField pfRepassword=new PasswordField();
+	private PasswordField pfPassword = new PasswordField();
 	@FXML
-	private Button btnRegister=new Button();
+	private PasswordField pfRepassword = new PasswordField();
 	@FXML
-	private Label labelLogin=new Label();
+	private Button btnRegister = new Button();
 	@FXML
-	private CheckBox male=new CheckBox();
+	private Label labelLogin = new Label();
 	@FXML
-	private CheckBox female=new CheckBox();
-	
-	private User u=new User();
-	private checkUser check=new checkUser();
-	
+	private CheckBox male = new CheckBox();
+	@FXML
+	private CheckBox female = new CheckBox();
+
+	private User u = new User();
+	private checkUser check = new checkUser();
+	private ConnectToServer connect = new ConnectToServer();
+	private client c = null;
+
+	public registerController(client c) {
+		super();
+		this.c = c;
+	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		// TODO Auto-generated method stub
 		male.setSelected(true);
-		male.setOnMouseClicked(event->{female.setSelected(false);});
-		female.setOnMouseClicked(event->{male.setSelected(false);});
-		pfRepassword.setOnKeyReleased(event->{
-			KeyCode kc=event.getCode();
+		male.setOnMouseClicked(event -> {
+			female.setSelected(false);
+		});
+		female.setOnMouseClicked(event -> {
+			male.setSelected(false);
+		});
+		pfRepassword.setOnKeyReleased(event -> {
+			KeyCode kc = event.getCode();
 			if (pfRepassword.getText().equals(pfPassword.getText())) {
 				pfRepassword.setStyle("-fx-border-color:blue");
-				if (kc==KeyCode.ENTER) register();
-			}else {
+				if (kc == KeyCode.ENTER)
+					register();
+			} else {
 				pfRepassword.setStyle("-fx-border-color:red");
 			}
 		});
 	}
+
 	public void register() {
 		if (!check.isValidEmail(tfEmail.getText())) {
 			Alert alert = new Alert(AlertType.WARNING);
-	        alert.setTitle("Warning alert");
-	        alert.setContentText("Wrong Email!");
-	        alert.showAndWait();
-		}else {
-			if (!check.checkExistUsername(tfUsername.getText())) {
+			alert.setTitle("Warning alert");
+			alert.setContentText("Wrong Email!");
+			alert.showAndWait();
+		} else {
+			if (connect.login(u) != null) {
 				Alert alert = new Alert(AlertType.WARNING);
-		        alert.setTitle("Warning alert");
-		        alert.setContentText("Wrong Username!");
-		        alert.showAndWait();
-			}else {
+				alert.setTitle("Warning alert");
+				alert.setContentText("Wrong Username!");
+				alert.showAndWait();
+			} else {
 				u.setUsername(tfUsername.getText());
-				if (pfPassword.getText().length()<6) {
+				if (pfPassword.getText().length() < 6) {
 					Alert alert = new Alert(AlertType.WARNING);
-			        alert.setTitle("Warning alert");
-			        alert.setContentText("Password is too short!");
-			        alert.showAndWait();
-				}else {
+					alert.setTitle("Warning alert");
+					alert.setContentText("Password is too short!");
+					alert.showAndWait();
+				} else {
 					short sex;
-					if (male.isSelected()) sex=0; else sex=1;
+					if (male.isSelected())
+						sex = 0;
+					else
+						sex = 1;
 					u.setSex(sex);
 					u.setPassword(pfPassword.getText());
-					if (check.createAccount(u)) {
+					if (connect.register(u)) {
 						Alert alert = new Alert(AlertType.WARNING);
-				        alert.setTitle("Alert");
-				        alert.setContentText("Create successful!");
-				        alert.showAndWait();
-				        try {
-							HomeController controller = new HomeController(u);
+						alert.setTitle("Alert");
+						alert.setContentText("Create successful!");
+						alert.showAndWait();
+						try {
+							c.setU(u);
+							HomeController controller = new HomeController(u,c);
 							FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
 							loader.setController(controller);
 							HBox layout = loader.load();
 							Scene scene = new Scene(layout, 767, 449);
-							Stage stage=new Stage();
+							Stage stage = new Stage();
 							stage.setScene(scene);
 							stage.setResizable(false);
 							stage.show();
@@ -102,15 +121,15 @@ public class registerController implements Initializable{
 						}
 						Stage stage = (Stage) tfUsername.getScene().getWindow();
 						stage.close();
-					}else {
+					} else {
 						Alert alert = new Alert(AlertType.WARNING);
-				        alert.setTitle("Alert");
-				        alert.setContentText("Create fail!");
-				        alert.showAndWait();
+						alert.setTitle("Alert");
+						alert.setContentText("Create fail!");
+						alert.showAndWait();
 					}
 				}
 			}
 		}
 	}
-	
+
 }

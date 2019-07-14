@@ -12,9 +12,13 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-//			HBox root = (HBox)FXMLLoader.load(getClass().getResource("Home.fxml"));
-//			Scene scene = new Scene(root,767,449);
-			VBox root =(VBox)FXMLLoader.load(getClass().getResource("logIn.fxml"));
+			client c=new client();
+			FXMLLoader loader=new FXMLLoader(getClass().getResource("logIn.fxml"));
+			logInController controll=new logInController();
+			controll.setC(c);
+			loader.setController(controll);
+			VBox root =(VBox)loader.load();
+			//logInController controll=
 			Scene scene=new Scene(root,257,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);

@@ -1,30 +1,22 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 import java.util.ResourceBundle;
 
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -37,9 +29,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import login.client;
 import model.Message;
 import model.User;
-import service.connectMongodb;
+import service.ConnectToServer;
 
 public class HomeController implements Initializable {
 	@FXML
@@ -62,24 +56,31 @@ public class HomeController implements Initializable {
 	private static final int MAX_WIDTH_IMAGE = 250;
 
 	private User u = new User();
-	private User friend = new User();
+	private client c = null;
+
+	private User friend = null;
+	private ConnectToServer connect = new ConnectToServer();
+	FileReader fr = null;
+	thread t=new thread();
 
 	public HomeController() {
 		super();
 	}
 
-	public HomeController(User u) {
+	public HomeController(User u, client c) {
 		super();
 		this.u = u;
+		this.c = c;
 	}
 
-	public void showListFriend(ArrayList<User> listF) {
+	public void showListUser(List<User> listF) {
 		for (User user : listF) {
-			insertFriend(user);
+			if (u != user)
+				insertUser(user);
 		}
 	}
 
-	public void insertFriend(User friend) {
+	public void insertUser(User friend) {
 		Label l = new Label(friend.getUsername());
 		l.setPadding(new Insets(5, 10, 5, 10));
 		Circle mycircle = new Circle();
@@ -91,26 +92,34 @@ public class HomeController implements Initializable {
 	}
 
 	public void showListMessage(User friend) {
+		listMessage.getItems().clear();
 		// set tên cho label myName
-		ArrayList<Message> listM = u.getListMessage(friend);
+		// List<Message> listM = u.getListMessage(friend);
+		List<Message> listM = new ArrayList<Message>();
 		myName.setText(u.getUsername());
 		// set tên cho label dialogist
 		dialogist.setText(friend.getUsername());
+
+		Button btnLoad = new Button("Add Message");
+		BorderPane bp = new BorderPane(btnLoad);
+		listMessage.getItems().add(0, bp);
+
 		int len = listM.size();
 		while (len++ < MAX_MESSAGES) {
 			listM.add(0, null);
 		}
+		int check = 1;
 		for (Message m : listM) {
-			insertMessage(m);
+			insertMessage(check++, m);
 		}
 	}
 
 	// Cái tên nói lên tất cả
-	public void insertMessage(Message m) {
+	public void insertMessage(int location, Message m) {
 		BorderPane bp = new BorderPane();
 		if (m == null) {
 			Label l = new Label("");
-			l.setPadding(new Insets(5, 10, 5, 10));
+			l.setPadding(new Insets(5, 10,5, 10));
 			bp.getChildren().add(l);
 			listMessage.getItems().add(bp);
 		} else {
@@ -168,72 +177,79 @@ public class HomeController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// TODO Auto-generated method stub
-		ArrayList<User> listF = u.getListFriend();
-		showListFriend(listF);
-		// sư kiên khi chọn friend
+		List<User> listF = connect.findAllUser();
+		showListUser(listF);
+		
+		if (!listF.isEmpty()) {
+			friend=listF.get(0);
+			showListMessage(friend);
+		}
+		// liên tục nhận tin nhắn về
+		t.start();
+		// sư kiên khi chọn items của listFriend
 		listFriend.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
-				
-				Alert alert = new Alert(AlertType.CONFIRMATION);
-				alert.setTitle("Alert");
-				alert.setContentText("Bạn muốn kết bạn với người này?");
-				Optional<ButtonType> option = alert.showAndWait();
-				if (option.get() == ButtonType.OK) {
+				User check = connect.searchByName(l.getText());
+				if (check != null) {
+					friend = check;
+					showListMessage(friend);
 				}
 			}
 		});
-		// auto complete find Friend
-		findUser.setOnKeyReleased(event -> {
-			String key = findUser.getText();
-			if (key.equals("")) {
-				listFriend.getItems().clear();
-				showListFriend(listF);
-			} else {
-				ArrayList<User> listUser = new ArrayList<User>();
-				try {
-					MongoClient mongo=connectMongodb.getMongoClient_1();
-					DB db=(DB) mongo.getDB("demo");
-					DBCollection dept=db.getCollection("user");
-					BasicDBObjectBuilder whereBuilder=BasicDBObjectBuilder.start();
-					whereBuilder.append("username",java.util.regex.Pattern.compile(key));
-					DBObject where=whereBuilder.get();
-					DBCursor cursor=dept.find(where);
-					while(cursor.hasNext()) {
-						DBObject rs=cursor.next();
-						if (!(rs.get("username").equals(u.getUsername()))) {
-							listUser.add(new User((String)rs.get("username"),(String) rs.get("password")));
-							System.out.println(rs.get("username"));
-						}
-					}
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				listFriend.getItems().clear();
-				for (User u : listUser) {
-					insertFriend(u);
-				}
-			}
-		});
+		friend=new User("123","234");
+		insertMessage(0, new Message(0,0,"123",""));
 		// sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
 			KeyCode kc = event.getCode();
-			if (kc == KeyCode.ENTER) {
-				Message m = new Message(0, u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
-				m.addMessageToDatabase(m);
-				insertMessage(m);
+			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText()!="") {
+				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
+				connect.sendMessage(m);//truyền đến sever
+				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
+				insertMessage(listMessage.getItems().size(), m);
 				enterMessage.setText("");
-
-				// Lưu dữ liệu và database
 			}
 		});
-		if (!listF.isEmpty())
-			showListMessage(listF.get(0));
+		showListMessage(new User());
+	}
+	class thread extends Thread{
+		public void run() {
+			while(true) {
+				//TODO
+				System.out.println(1);
+				try {
+					fr =new FileReader("tranferMessage");
+					FileWriter fw=new FileWriter("tranferMessage",false);
+					BufferedReader br=new BufferedReader(fr);
+					String s=null;
+					while((s=br.readLine())!=null) {
+						ObjectMapper mapper = new ObjectMapper();
+						try {
+						    Message m = mapper.readValue(s, Message.class);
+						    insertMessage(listMessage.getItems().size(), m);
+						} catch (IOException e) {
+						    e.printStackTrace();
+						}
+					}
+					fw.write("");
+					fw.close();
+					br.close();
+					fr.close();
+					sleep(600);
+				} catch (InterruptedException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+	public void setStage(Stage stage) {
+		stage.setOnCloseRequest(e->{
+			t.stop();
+		});
+		
 	}
 
 }

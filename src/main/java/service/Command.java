@@ -8,7 +8,7 @@ import model.User;
 public interface Command {
 	User login(User user);
 	boolean register(User user);
-	List<User> searchByName(String name);
+	User searchByName(String name);
 	void sendMessage(Message message);
 	List<User> findAllUser();
 }
