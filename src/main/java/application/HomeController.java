@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,6 +63,7 @@ public class HomeController implements Initializable {
 	private ConnectToServer connect = new ConnectToServer();
 	FileReader fr = null;
 	thread t=new thread();
+	long numberOfMessage;
 
 	public HomeController() {
 		super();
@@ -75,13 +77,13 @@ public class HomeController implements Initializable {
 
 	public void showListUser(List<User> listF) {
 		for (User user : listF) {
-			if (u != user)
+			if (!u.getUsername().equals(user.getUsername()))
 				insertUser(user);
 		}
 	}
 
-	public void insertUser(User friend) {
-		Label l = new Label(friend.getUsername());
+	public void insertUser(User user) {
+		Label l = new Label(user.getUsername());
 		l.setPadding(new Insets(5, 10, 5, 10));
 		Circle mycircle = new Circle();
 		mycircle.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/account.jpg"))));
@@ -94,13 +96,17 @@ public class HomeController implements Initializable {
 	public void showListMessage(User friend) {
 		listMessage.getItems().clear();
 		// set tên cho label myName
-		// List<Message> listM = u.getListMessage(friend);
-		List<Message> listM = new ArrayList<Message>();
+		List<Message> listM = u.getListMessage(friend, 0);
+		numberOfMessage=listM.size();
 		myName.setText(u.getUsername());
 		// set tên cho label dialogist
 		dialogist.setText(friend.getUsername());
 
 		Button btnLoad = new Button("Add Message");
+		btnLoad.setOnAction(e->{
+			System.out.println(3);
+			addBeforeMessage();
+		});
 		BorderPane bp = new BorderPane(btnLoad);
 		listMessage.getItems().add(0, bp);
 
@@ -113,9 +119,17 @@ public class HomeController implements Initializable {
 			insertMessage(check++, m);
 		}
 	}
+	public void addBeforeMessage() {
+		if (numberOfMessage%MAX_MESSAGES!=0) return;
+		List<Message> listM = u.getListMessage(friend, numberOfMessage);
+		for (Message m : listM) {
+			insertMessage(listMessage.getItems().size()-numberOfMessage, m);
+		}
+		numberOfMessage +=listM.size();
+	}
 
 	// Cái tên nói lên tất cả
-	public void insertMessage(int location, Message m) {
+	public void insertMessage(long n, Message m) {
 		BorderPane bp = new BorderPane();
 		if (m == null) {
 			Label l = new Label("");
@@ -129,7 +143,7 @@ public class HomeController implements Initializable {
 			l.setWrapText(true);
 			Circle mycircle;
 			ImageView image = null;
-			if (m.getImage() != "") {
+			if (!m.getImage().equals("")) {
 				image = new ImageView(new Image(m.getImage()));
 				image.maxHeight(MAX_HEIGHT_IMAGE);
 				image.maxWidth(MAX_WIDTH_IMAGE);
@@ -149,7 +163,7 @@ public class HomeController implements Initializable {
 				vb.setSpacing(2);
 				hb.getChildren().addAll(mycircle, vb);
 				hb.setSpacing(4);
-				if (m.getContent() != "")
+				if (!m.getContent().equals(""))
 					vb.getChildren().add(l);
 				if (image != null) {
 					vb.getChildren().add(image);
@@ -158,7 +172,7 @@ public class HomeController implements Initializable {
 			} else {
 				VBox vb = new VBox();
 				vb.setSpacing(2);
-				if (m.getContent() != "") {
+				if (!m.getContent().equals("")) {
 					BorderPane p = new BorderPane();
 					l.setStyle("-fx-background-radius:10;-fx-background-color:deepskyblue;");
 					l.setAlignment(Pos.CENTER_RIGHT);
@@ -171,17 +185,21 @@ public class HomeController implements Initializable {
 				bp.setRight(vb);
 			}
 		}
-		listMessage.getItems().add(bp);
+		ObservableList<BorderPane> items=(ObservableList<BorderPane>)listMessage.getItems();
+		items.add((int) n, bp);
+		listMessage.setItems(items);
 		listMessage.scrollTo(bp);
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		List<User> listF = connect.findAllUser();
-		showListUser(listF);
-		
 		if (!listF.isEmpty()) {
-			friend=listF.get(0);
+			showListUser(listF);
+			for (User user:listF) if (!u.getUsername().equals(user.getUsername())) { 
+				friend=user;
+				break;
+			}
 			showListMessage(friend);
 		}
 		// liên tục nhận tin nhắn về
@@ -199,8 +217,6 @@ public class HomeController implements Initializable {
 				}
 			}
 		});
-		friend=new User("123","234");
-		insertMessage(0, new Message(0,0,"123",""));
 		// sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
 			KeyCode kc = event.getCode();
@@ -212,7 +228,7 @@ public class HomeController implements Initializable {
 				enterMessage.setText("");
 			}
 		});
-		showListMessage(new User());
+//		showListMessage(new User());
 	}
 	class thread extends Thread{
 		public void run() {
