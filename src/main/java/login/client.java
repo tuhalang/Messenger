@@ -64,7 +64,7 @@ public class client {
 			            fw.write(s+"\n");
 			            fw.close();
 					}
-					sleep(1000);
+					sleep(500);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {

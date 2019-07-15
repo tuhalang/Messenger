@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import login.client;
@@ -27,7 +28,7 @@ public class ConnectToServer implements Command{
 
 	@Override
 	public User login(User user) {
-		return user;
+		return new User(0, "tvd", "123");
 	}
 
 	@Override
@@ -51,6 +52,9 @@ public class ConnectToServer implements Command{
 	@Override
 	public List<User> findAllUser() {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<User> listU=new ArrayList<User>();
+		listU.add(new User(0, "tvd", "123"));
+		listU.add(new User(1, "qwer", "123"));
+		return listU;
 	}
 }
