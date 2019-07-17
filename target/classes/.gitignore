@@ -1,3 +1,4 @@
-/application/
 /login/
-/model/
+/application/
+/service/
+/register/

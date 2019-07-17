@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -17,9 +18,11 @@ public class Message implements Serializable{
 	private long messageId;
 	private long sourceId;
 	private long targetId;
+	private String icon;
 	private String content;
 	private String image;
-	
+	private int seen;
+	private Date date;
 	public Message() {
 		super();
 	}
@@ -29,6 +32,7 @@ public class Message implements Serializable{
 		this.targetId = targetId;
 		this.content = content;
 		this.image = image;
+		this.icon="";
 	}
 	public long getMessageId() {
 		return messageId;
@@ -39,7 +43,7 @@ public class Message implements Serializable{
 	public long getSourceId() {
 		return sourceId;
 	}
-	public void setsourceId(long sourceId) {
+	public void setSourceId(long sourceId) {
 		this.sourceId = sourceId;
 	}
 	public long getTargetId() {
@@ -47,6 +51,12 @@ public class Message implements Serializable{
 	}
 	public void setTargetId(long targetId) {
 		this.targetId = targetId;
+	}
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 	public String getContent() {
 		return content;
@@ -59,6 +69,19 @@ public class Message implements Serializable{
 	}
 	public void setImage(String image) {
 		this.image = image;
+	}
+	
+	public int getSeen() {
+		return seen;
+	}
+	public void setSeen(int seen) {
+		this.seen = seen;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	@Override
 	public String toString() {

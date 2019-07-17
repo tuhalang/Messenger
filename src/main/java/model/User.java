@@ -119,7 +119,7 @@ public class User implements Serializable {
 			List<DBObject> case2=new ArrayList<DBObject>();
 			case2.add(new BasicDBObject("targetId", this.getUserId()));
 			case2.add(new BasicDBObject("sourceId", friend.getUserId()));
-			List<DBObject> ORcase=new ArrayList<DBObject>();
+			List<BasicDBObject> ORcase=new ArrayList<BasicDBObject>();
 			ORcase.add(new BasicDBObject("$and",case1));
 			ORcase.add(new BasicDBObject("$and",case2));
 			List<DBObject> criteria = new ArrayList<DBObject>();
@@ -131,6 +131,7 @@ public class User implements Serializable {
 				DBObject rs = cursor.next();
 				Message m = new Message(Long.parseLong(rs.get("sourceId").toString()),Long.parseLong( rs.get("targetId").toString()), (String) rs.get("content"),
 						(String) rs.get("image"));
+				m.setIcon(rs.get("icon").toString());
 				listM.add(m);
 			}
 		} catch (UnknownHostException e) {
@@ -149,6 +150,7 @@ public class User implements Serializable {
 			document.put("id", size+1);
 			document.put("sourceId", m.getSourceId());
 			document.put("targetId", m.getTargetId());
+			document.put("icon",m.getIcon());
 			document.put("content", m.getContent());
 			document.put("image", m.getImage());
 			dept.insert(document);
@@ -157,15 +159,21 @@ public class User implements Serializable {
 		}
 	}
 
-	public long getSizeListMessage(long l,long m) {
+	public long getSizeListMessage(long sourceId,long targetId) {
 		try {
 			MongoClient mongo = connectMongodb.getMongoClient_1();
 			DB db = (DB) mongo.getDB("demo");
 			DBCollection dept = db.getCollection("message");
-			List<DBObject> criteria = new ArrayList<DBObject>();
-			criteria.add(new BasicDBObject("sourceId", l));
-			criteria.add(new BasicDBObject("targetId", m));
-			DBCursor cursor = dept.find(new BasicDBObject("$and", criteria));
+			List<DBObject> case1=new ArrayList<DBObject>();
+			case1.add(new BasicDBObject("sourceId", sourceId));
+			case1.add(new BasicDBObject("targetId", targetId));
+			List<DBObject> case2=new ArrayList<DBObject>();
+			case2.add(new BasicDBObject("targetId", sourceId));
+			case2.add(new BasicDBObject("sourceId", targetId));
+			List<BasicDBObject> ORcase=new ArrayList<BasicDBObject>();
+			ORcase.add(new BasicDBObject("$and",case1));
+			ORcase.add(new BasicDBObject("$and",case2));
+			DBCursor cursor = dept.find(new BasicDBObject("$or", ORcase));
 			return cursor.size();
 		} catch (UnknownHostException e) {
 			logger.severe("User:" + e.getMessage());

@@ -1,11 +1,11 @@
 package application;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,6 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import login.client;
 import model.Message;
@@ -49,6 +50,10 @@ public class HomeController implements Initializable {
 	private Label dialogist = new Label();
 	@FXML
 	private Label myName = new Label();
+	@FXML
+	private ImageView icon = new ImageView();
+	@FXML
+	private ImageView chooseImage=new ImageView();
 
 	private static final int MAX_MESSAGES = 20;
 	private static final int DISPLAYED_MESSAGES = 8;
@@ -62,8 +67,8 @@ public class HomeController implements Initializable {
 	private User friend = null;
 	private ConnectToServer connect = new ConnectToServer();
 	FileReader fr = null;
-	thread t=new thread();
-	long numberOfMessage;
+	thread t = new thread();
+	long numberOfMessage = 0;
 
 	public HomeController() {
 		super();
@@ -73,6 +78,7 @@ public class HomeController implements Initializable {
 		super();
 		this.u = u;
 		this.c = c;
+		this.c.setHome(this);
 	}
 
 	public void showListUser(List<User> listF) {
@@ -97,14 +103,13 @@ public class HomeController implements Initializable {
 		listMessage.getItems().clear();
 		// set tên cho label myName
 		List<Message> listM = u.getListMessage(friend, 0);
-		numberOfMessage=listM.size();
+		numberOfMessage = listM.size();
 		myName.setText(u.getUsername());
 		// set tên cho label dialogist
 		dialogist.setText(friend.getUsername());
 
 		Button btnLoad = new Button("Add Message");
-		btnLoad.setOnAction(e->{
-			System.out.println(3);
+		btnLoad.setOnAction(e -> {
 			addBeforeMessage();
 		});
 		BorderPane bp = new BorderPane(btnLoad);
@@ -119,13 +124,15 @@ public class HomeController implements Initializable {
 			insertMessage(check++, m);
 		}
 	}
+
 	public void addBeforeMessage() {
-		if (numberOfMessage%MAX_MESSAGES!=0) return;
+		if (numberOfMessage % MAX_MESSAGES != 0)
+			return;
 		List<Message> listM = u.getListMessage(friend, numberOfMessage);
 		for (Message m : listM) {
-			insertMessage(listMessage.getItems().size()-numberOfMessage, m);
+			insertMessage(listMessage.getItems().size() - numberOfMessage, m);
 		}
-		numberOfMessage +=listM.size();
+		numberOfMessage += listM.size();
 	}
 
 	// Cái tên nói lên tất cả
@@ -133,9 +140,26 @@ public class HomeController implements Initializable {
 		BorderPane bp = new BorderPane();
 		if (m == null) {
 			Label l = new Label("");
-			l.setPadding(new Insets(5, 10,5, 10));
+			l.setPadding(new Insets(5, 10, 5, 10));
 			bp.getChildren().add(l);
-			listMessage.getItems().add(bp);
+		} else if (!m.getIcon().equals("")) {
+			if (m.getSourceId() == friend.getUserId()) {
+				Circle mycircle = new Circle();
+				mycircle.setFill(new ImagePattern(new Image(getClass().getResourceAsStream("/account.jpg"))));
+				mycircle.setRadius(10);
+				Circle icon = new Circle();
+				icon.setFill(new ImagePattern(new Image(getClass().getResourceAsStream(m.getIcon()))));
+				icon.setRadius(10);
+				HBox hb = new HBox();
+				hb.getChildren().addAll(mycircle, icon);
+				hb.setSpacing(4);
+				bp.setLeft(hb);
+			} else {
+				Circle icon = new Circle();
+				icon.setFill(new ImagePattern(new Image(getClass().getResourceAsStream(m.getIcon()))));
+				icon.setRadius(10);
+				bp.setRight(icon);
+			}
 		} else {
 			Label l = new Label(m.getContent());
 			l.setPadding(new Insets(5, 10, 5, 10));
@@ -185,7 +209,7 @@ public class HomeController implements Initializable {
 				bp.setRight(vb);
 			}
 		}
-		ObservableList<BorderPane> items=(ObservableList<BorderPane>)listMessage.getItems();
+		ObservableList<BorderPane> items = (ObservableList<BorderPane>) listMessage.getItems();
 		items.add((int) n, bp);
 		listMessage.setItems(items);
 		listMessage.scrollTo(bp);
@@ -196,10 +220,11 @@ public class HomeController implements Initializable {
 		List<User> listF = connect.findAllUser();
 		if (!listF.isEmpty()) {
 			showListUser(listF);
-			for (User user:listF) if (!u.getUsername().equals(user.getUsername())) { 
-				friend=user;
-				break;
-			}
+			for (User user : listF)
+				if (!u.getUsername().equals(user.getUsername())) {
+					friend = user;
+					break;
+				}
 			showListMessage(friend);
 		}
 		// liên tục nhận tin nhắn về
@@ -220,52 +245,60 @@ public class HomeController implements Initializable {
 		// sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
 			KeyCode kc = event.getCode();
-			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText()!="") {
+			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
 				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
-				connect.sendMessage(m);//truyền đến sever
+				connect.sendMessage(m);// truyền đến sever
 				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
 				insertMessage(listMessage.getItems().size(), m);
 				enterMessage.setText("");
 			}
 		});
-//		showListMessage(new User());
 	}
-	class thread extends Thread{
+
+	@FXML
+	public void clickIcon() {
+		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
+		m.setIcon("/like.png");
+		connect.sendMessage(m);
+		u.addMessageToDatabase(m);
+		insertMessage(listMessage.getItems().size(), m);
+	}
+	@FXML
+	public void chooseImage() {//xử lí sự kiện chèn hình ảnh
+		FileChooser fileChooser = new FileChooser();
+		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
+		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
+		connect.sendMessage(m);
+		u.addMessageToDatabase(m);
+		insertMessage(listMessage.getItems().size(), m);
+	}
+
+	class thread extends Thread {
 		public void run() {
-			while(true) {
-				//TODO
-				System.out.println(1);
+			while (true) {
 				try {
-					fr =new FileReader("tranferMessage");
-					FileWriter fw=new FileWriter("tranferMessage",false);
-					BufferedReader br=new BufferedReader(fr);
-					String s=null;
-					while((s=br.readLine())!=null) {
-						ObjectMapper mapper = new ObjectMapper();
-						try {
-						    Message m = mapper.readValue(s, Message.class);
-						    insertMessage(listMessage.getItems().size(), m);
-						} catch (IOException e) {
-						    e.printStackTrace();
-						}
+					while (!ConnectToServer.listMess.isEmpty()) {
+						insertMessage(listMessage.getItems().size(),ConnectToServer.listMess.poll());
 					}
-					fw.write("");
-					fw.close();
-					br.close();
-					fr.close();
-					sleep(600);
-				} catch (InterruptedException | IOException e1) {
-					// TODO Auto-generated catch block
+					sleep(1000);
+				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
 			}
 		}
 	}
+
+	@SuppressWarnings("deprecation")
 	public void setStage(Stage stage) {
-		stage.setOnCloseRequest(e->{
+		stage.setOnCloseRequest(e -> {
+			try {
+				c.closeClient();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			t.stop();
 		});
-		
+
 	}
 
 }

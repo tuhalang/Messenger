@@ -100,7 +100,7 @@ public class registerController implements Initializable {
 						sex = 1;
 					u.setSex(sex);
 					u.setPassword(pfPassword.getText());
-					if (connect.register(u)) {
+					if (connect.register(u)!=null) {
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle("Alert");
 						alert.setContentText("Create successful!");

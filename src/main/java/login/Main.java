@@ -18,7 +18,6 @@ public class Main extends Application {
 			controll.setC(c);
 			loader.setController(controll);
 			VBox root =(VBox)loader.load();
-			//logInController controll=
 			Scene scene=new Scene(root,257,250);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
