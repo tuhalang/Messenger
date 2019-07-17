@@ -28,8 +28,8 @@ public class User implements Serializable {
 	private long userId;
 	private String username;
 	private String password;
-	private short sex;
-	private boolean enabled;
+	private int sex;
+	private int enabled;
 
 	Logger logger = Logging.getLogger();
 
@@ -74,20 +74,22 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+	
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public short getSex() {
+	public int getSex() {
 		return sex;
 	}
 
-	public void setSex(short sex) {
+	public void setSex(int sex) {
 		this.sex = sex;
+	}
+
+	public int getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(int enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override

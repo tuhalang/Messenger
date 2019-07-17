@@ -18,12 +18,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import login.client;
+import model.Client;
 import model.User;
 import service.ConnectToServer;
 import service.checkUser;
 
-public class registerController implements Initializable {
+public class RegisterController implements Initializable {
 	@FXML
 	private TextField tfEmail = new TextField();
 	@FXML
@@ -44,9 +44,9 @@ public class registerController implements Initializable {
 	private User u = new User();
 	private checkUser check = new checkUser();
 	private ConnectToServer connect = new ConnectToServer();
-	private client c = null;
+	private Client c = null;
 
-	public registerController(client c) {
+	public RegisterController(Client c) {
 		super();
 		this.c = c;
 	}
@@ -106,7 +106,7 @@ public class registerController implements Initializable {
 						alert.setContentText("Create successful!");
 						alert.showAndWait();
 						try {
-							c.setU(u);
+							c.setUser(u);
 							HomeController controller = new HomeController(u,c);
 							FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
 							loader.setController(controller);

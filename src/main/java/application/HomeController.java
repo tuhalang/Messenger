@@ -32,7 +32,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import login.client;
+import model.Client;
 import model.Message;
 import model.User;
 import service.ConnectToServer;
@@ -62,7 +62,7 @@ public class HomeController implements Initializable {
 	private static final int MAX_WIDTH_IMAGE = 250;
 
 	private User u = new User();
-	private client c = null;
+	private Client c = null;
 
 	private User friend = null;
 	private ConnectToServer connect = new ConnectToServer();
@@ -74,7 +74,7 @@ public class HomeController implements Initializable {
 		super();
 	}
 
-	public HomeController(User u, client c) {
+	public HomeController(User u, Client c) {
 		super();
 		this.u = u;
 		this.c = c;
