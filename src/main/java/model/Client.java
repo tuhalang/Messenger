@@ -1,16 +1,17 @@
 package model;
 
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import Logging.Logging;
+import service.ConnectToServer;
 import service.impl.Handle;
 
 public class Client {
@@ -21,6 +22,9 @@ public class Client {
 	private Socket socket = null;
 	private User user = null;
 	private boolean valid = false;
+	private boolean validRegister=false;
+	private List<User> allUser=null;
+	private List<User> searchUser=null;
 
 	public Client(User user) {
 		readConfigFile();
@@ -89,6 +93,29 @@ public class Client {
 
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+	public boolean isValidRegister() {
+		return validRegister;
+	}
+
+	public void setValidRegister(boolean validRegister) {
+		this.validRegister = validRegister;
+	}
+	
+	public List<User> getAllUser() {
+		return allUser;
+	}
+
+	public void setAllUser(List<User> allUser) {
+		this.allUser = allUser;
+	}
+	
+	public List<User> getSearchUser() {
+		return searchUser;
+	}
+
+	public void setSearchUser(List<User> searchUser) {
+		this.searchUser = searchUser;
 	}
 
 	public Socket getSocket() {

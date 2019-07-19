@@ -3,6 +3,9 @@ package register;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import application.HomeController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +23,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import model.Client;
 import model.User;
-import service.ConnectToServer;
-import service.checkUser;
 
 public class RegisterController implements Initializable {
 	@FXML
@@ -42,13 +43,11 @@ public class RegisterController implements Initializable {
 	private CheckBox female = new CheckBox();
 
 	private User u = new User();
-	private checkUser check = new checkUser();
-	private ConnectToServer connect = new ConnectToServer();
-	private Client c = null;
+	private Client client = null;
 
-	public RegisterController(Client c) {
+	public RegisterController(Client client) {
 		super();
-		this.c = c;
+		this.client = client;
 	}
 
 	@Override
@@ -74,60 +73,54 @@ public class RegisterController implements Initializable {
 	}
 
 	public void register() {
-		if (!check.isValidEmail(tfEmail.getText())) {
+		u.setUsername(tfUsername.getText());
+		if (pfPassword.getText().length() < 6) {
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Warning alert");
-			alert.setContentText("Wrong Email!");
+			alert.setContentText("Password is too short!");
 			alert.showAndWait();
 		} else {
-			if (connect.login(u) != null) {
+			short sex;
+			if (male.isSelected())
+				sex = 0;
+			else
+				sex = 1;
+			u.setSex(sex);
+			u.setPassword(pfPassword.getText());
+			client=new Client(u);
+			ObjectMapper mapper=new ObjectMapper();
+			try {
+				client.send("2", mapper.writeValueAsString(u));
+			} catch (JsonProcessingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			if (client.isValidRegister()) {
 				Alert alert = new Alert(AlertType.WARNING);
-				alert.setTitle("Warning alert");
-				alert.setContentText("Wrong Username!");
+				alert.setTitle("Alert");
+				alert.setContentText("Create successful!");
 				alert.showAndWait();
-			} else {
-				u.setUsername(tfUsername.getText());
-				if (pfPassword.getText().length() < 6) {
-					Alert alert = new Alert(AlertType.WARNING);
-					alert.setTitle("Warning alert");
-					alert.setContentText("Password is too short!");
-					alert.showAndWait();
-				} else {
-					short sex;
-					if (male.isSelected())
-						sex = 0;
-					else
-						sex = 1;
-					u.setSex(sex);
-					u.setPassword(pfPassword.getText());
-					if (connect.register(u)!=null) {
-						Alert alert = new Alert(AlertType.WARNING);
-						alert.setTitle("Alert");
-						alert.setContentText("Create successful!");
-						alert.showAndWait();
-						try {
-							c.setUser(u);
-							HomeController controller = new HomeController(u,c);
-							FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
-							loader.setController(controller);
-							HBox layout = loader.load();
-							Scene scene = new Scene(layout, 767, 449);
-							Stage stage = new Stage();
-							stage.setScene(scene);
-							stage.setResizable(false);
-							stage.show();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						Stage stage = (Stage) tfUsername.getScene().getWindow();
-						stage.close();
-					} else {
-						Alert alert = new Alert(AlertType.WARNING);
-						alert.setTitle("Alert");
-						alert.setContentText("Create fail!");
-						alert.showAndWait();
-					}
+				try {
+					client.setUser(u);
+					HomeController controller = new HomeController(client.getUser(), client);
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
+					loader.setController(controller);
+					HBox layout = loader.load();
+					Scene scene = new Scene(layout, 767, 449);
+					Stage stage = new Stage();
+					stage.setScene(scene);
+					stage.setResizable(false);
+					stage.show();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+				Stage stage = (Stage) tfUsername.getScene().getWindow();
+				stage.close();
+			} else {
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Alert");
+				alert.setContentText("Create fail!");
+				alert.showAndWait();
 			}
 		}
 	}

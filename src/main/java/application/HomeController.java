@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.List;
@@ -17,16 +18,19 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Client;
 import model.Message;
 import model.User;
+import service.ConnectToServer;
 
 public class HomeController implements Initializable {
 	@FXML
@@ -57,6 +61,7 @@ public class HomeController implements Initializable {
 
 	private User friend = null;
 	FileReader fr = null;
+	ConnectToServer connect=new ConnectToServer();
 	//thread t = new thread();
 	long numberOfMessage = 0;
 
@@ -64,11 +69,11 @@ public class HomeController implements Initializable {
 		super();
 	}
 
-	public HomeController(User u, Client c) {
+	public HomeController(User u, Client client) {
 		super();
 		this.u = u;
-		this.client = c;
-		//this.client.setHome(this);
+		this.client = client;
+		connect.setClient(this.client);
 	}
 
 	public void showListUser(List<User> listF) {
@@ -207,16 +212,17 @@ public class HomeController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-//		List<User> listF = connect.findAllUser();
-//		if (!listF.isEmpty()) {
-//			showListUser(listF);
-//			for (User user : listF)
-//				if (!u.getUsername().equals(user.getUsername())) {
-//					friend = user;
-//					break;
-//				}
-//			showListMessage(friend);
-//		}
+		List<User> listF = connect.findAllUser();
+		if (listF!=null) System.out.println("success");
+		if (!listF.isEmpty()) {
+			showListUser(listF);
+			for (User user : listF)
+				if (!u.getUsername().equals(user.getUsername())) {
+					friend = user;
+					break;
+				}
+			showListMessage(friend);
+		}
 //		// liên tục nhận tin nhắn về
 //		t.start();
 //		// sư kiên khi chọn items của listFriend
@@ -224,24 +230,24 @@ public class HomeController implements Initializable {
 
 			@Override
 			public void handle(MouseEvent arg0) {
-//				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
-//				User check = connect.searchByName(l.getText());
-//				if (check != null) {
-//					friend = check;
-//					showListMessage(friend);
-//				}
+				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
+				User check = connect.searchByName(l.getText());
+				if (check != null) {
+					friend = check;
+					showListMessage(friend);
+				}
 			}
 		});
 //		// sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
-//			KeyCode kc = event.getCode();
-//			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
-//				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
-//				connect.sendMessage(m);// truyền đến sever
-//				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
-//				insertMessage(listMessage.getItems().size(), m);
-//				enterMessage.setText("");
-//			}
+			KeyCode kc = event.getCode();
+			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
+				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
+				connect.sendMessage(m);// truyền đến sever
+				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
+				insertMessage(listMessage.getItems().size(), m);
+				enterMessage.setText("");
+			}
 		});
 	}
 //
@@ -255,40 +261,24 @@ public class HomeController implements Initializable {
 	}
 	@FXML
 	public void chooseImage() {//xử lí sự kiện chèn hình ảnh
-//		FileChooser fileChooser = new FileChooser();
-//		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
-//		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
-//		connect.sendMessage(m);
-//		u.addMessageToDatabase(m);
-//		insertMessage(listMessage.getItems().size(), m);
+		FileChooser fileChooser = new FileChooser();
+		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
+		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
+		connect.sendMessage(m);
+		u.addMessageToDatabase(m);
+		insertMessage(listMessage.getItems().size(), m);
 	}
-//
-//	class thread extends Thread {
-//		public void run() {
-//			while (true) {
-//				try {
-//					while (!ConnectToServer.listMess.isEmpty()) {
-//						insertMessage(listMessage.getItems().size(),ConnectToServer.listMess.poll());
-//					}
-//					sleep(1000);
-//				} catch (InterruptedException e1) {
-//					e1.printStackTrace();
-//				}
-//			}
-//		}
-//	}
 
 	@SuppressWarnings("deprecation")
 	public void setStage(Stage stage) {
 		stage.setOnCloseRequest(e -> {
-//			try {
-//				client.closeClient();
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
-//			t.stop();
+			//TODO
 		});
 
+	}
+	public void addM(Message m) {
+		u.addMessageToDatabase(m);
+		insertMessage(listMessage.getItems().size(), m);
 	}
 
 }

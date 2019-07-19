@@ -108,7 +108,7 @@ public class LogInController implements Initializable {
 				stage.setScene(scene);
 				stage.setResizable(false);
 				stage.setOnCloseRequest(e->{
-				
+					//TODO
 				});
 				controller.setStage(stage);
 				stage.show();
