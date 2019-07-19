@@ -17,8 +17,22 @@ import model.User;
 
 public class Handle {
 
+	//only use to receive message
 	public static void receive(Client client) {
-
+		Socket socket = client.getSocket();
+		while(socket.isConnected()) {
+			try {
+				InputStreamReader isr = new InputStreamReader(socket.getInputStream());
+				BufferedReader br = new BufferedReader(isr);
+				String message = "";
+				if(message != null && message.startsWith("3")) {
+					//TODO display message
+				}
+			} catch (IOException e) {
+				
+			}
+			
+		}
 	}
 	
 	/**
@@ -64,8 +78,10 @@ public class Handle {
 						// TODO decode error
 					}
 					if (response.substring(0,1).equals("3")) {
-						ObjectMapper mapper = new ObjectMapper();
+//						ObjectMapper mapper = new ObjectMapper();
 						//client.connect.receiveMessage(mapper.readValue(response.substring(1), Message.class));
+						//do nothing
+						
 					}
 					if (response.substring(0,1).equals("4")) {
 						ObjectMapper mapper = new ObjectMapper();
