@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.media.jfxmedia.logging.Logger;
 
 import application.HomeController;
 import model.Client;
@@ -20,22 +21,38 @@ public class Handle {
 
 	//only use to receive message
 	public static void receive(Client client,HomeController controller) {
-		Socket socket = client.getSocket();
-		while(socket.isConnected()) {
-			try {
-				InputStreamReader isr = new InputStreamReader(socket.getInputStream());
-				BufferedReader br = new BufferedReader(isr);
-				String message = "";
-				if(message != null && message.startsWith("3")) {
-					//TODO display message
-					ObjectMapper mapper=new ObjectMapper();
-					controller.addM(mapper.readValue(message.substring(1), Message.class));
-				}
-			} catch (IOException e) {
-				
-			}
+		
+		Runnable run = new Runnable() {
 			
-		}
+			@Override
+			public void run() {
+				Socket socket = client.getSocket();
+				System.out.println("Đang lắng nghe tin nhắn");
+				while(socket.isConnected()) {
+					
+					try {
+						InputStreamReader isr = new InputStreamReader(socket.getInputStream());
+						BufferedReader br = new BufferedReader(isr);
+						String message = "";
+						if(message != null && message.startsWith("3")) {
+							//TODO display message
+							message = br.readLine();
+							System.out.println("message to you: "+message);
+							ObjectMapper mapper=new ObjectMapper();
+							controller.addM(mapper.readValue(message.substring(1), Message.class));
+						}
+						if(message != null && !message.equals("")) System.out.println(message);
+					} catch (IOException e) {
+						System.out.println(e.getMessage());
+					}
+					
+				}
+				System.out.println("socket is closed");
+			}
+		};
+		Thread thread = new Thread(run);
+		thread.start();
+		
 	}
 	
 	/**
@@ -60,7 +77,7 @@ public class Handle {
 				InputStreamReader isr = new InputStreamReader(socket.getInputStream());
 				BufferedReader br = new BufferedReader(isr);
 				response = br.readLine();
-				System.out.println(response);
+				//System.out.println(response);
 				if (response != null) {
 					if (response.substring(0, 1).equals("1")) {
 						//TODO decode message 
@@ -84,6 +101,7 @@ public class Handle {
 //						ObjectMapper mapper = new ObjectMapper();
 						//client.connect.receiveMessage(mapper.readValue(response.substring(1), Message.class));
 						//do nothing
+						//System.out.println(response);
 						
 					}
 					if (response.substring(0,1).equals("4")) {

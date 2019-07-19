@@ -56,7 +56,7 @@ public class HomeController implements Initializable {
 	private static final int MAX_HEIGHT_IMAGE = 280;
 	private static final int MAX_WIDTH_IMAGE = 250;
 
-	private User u = new User();
+	private User u = null;
 	private Client client = null;
 
 	private User friend = null;
@@ -249,6 +249,7 @@ public class HomeController implements Initializable {
 				enterMessage.setText("");
 			}
 		});
+		
 		client.receive(this);
 	}
 //

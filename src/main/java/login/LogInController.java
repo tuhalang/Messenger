@@ -100,7 +100,7 @@ public class LogInController implements Initializable {
 			System.out.println("login thanh cong");
 			try {
 				Stage stage=new Stage();
-				HomeController controller = new HomeController(user,client);
+				HomeController controller = new HomeController(client.getUser(),client);
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
 				loader.setController(controller);
 				HBox layout = loader.load();
