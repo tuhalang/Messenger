@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import Logging.Logging;
+import application.HomeController;
 import service.ConnectToServer;
 import service.impl.Handle;
 
@@ -83,8 +84,8 @@ public class Client {
 		Handle.send(this, code, msg);
 	}
 
-	public void receive() {
-		Handle.receive(this);
+	public void receive(HomeController controller) {
+		Handle.receive(this,controller);
 	}
 
 	public boolean isValid() {

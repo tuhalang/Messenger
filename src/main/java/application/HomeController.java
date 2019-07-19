@@ -249,6 +249,7 @@ public class HomeController implements Initializable {
 				enterMessage.setText("");
 			}
 		});
+		client.receive(this);
 	}
 //
 	@FXML

@@ -11,6 +11,7 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import application.HomeController;
 import model.Client;
 import model.Message;
 import model.User;
@@ -18,7 +19,7 @@ import model.User;
 public class Handle {
 
 	//only use to receive message
-	public static void receive(Client client) {
+	public static void receive(Client client,HomeController controller) {
 		Socket socket = client.getSocket();
 		while(socket.isConnected()) {
 			try {
@@ -27,6 +28,8 @@ public class Handle {
 				String message = "";
 				if(message != null && message.startsWith("3")) {
 					//TODO display message
+					ObjectMapper mapper=new ObjectMapper();
+					controller.addM(mapper.readValue(message.substring(1), Message.class));
 				}
 			} catch (IOException e) {
 				
