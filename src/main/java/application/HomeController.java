@@ -1,15 +1,9 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -23,19 +17,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Client;
 import model.Message;
 import model.User;
-import service.ConnectToServer;
 
 public class HomeController implements Initializable {
 	@FXML
@@ -62,12 +53,11 @@ public class HomeController implements Initializable {
 	private static final int MAX_WIDTH_IMAGE = 250;
 
 	private User u = new User();
-	private Client c = null;
+	private Client client = null;
 
 	private User friend = null;
-	private ConnectToServer connect = new ConnectToServer();
 	FileReader fr = null;
-	thread t = new thread();
+	//thread t = new thread();
 	long numberOfMessage = 0;
 
 	public HomeController() {
@@ -77,8 +67,8 @@ public class HomeController implements Initializable {
 	public HomeController(User u, Client c) {
 		super();
 		this.u = u;
-		this.c = c;
-		this.c.setHome(this);
+		this.client = c;
+		//this.client.setHome(this);
 	}
 
 	public void showListUser(List<User> listF) {
@@ -217,86 +207,86 @@ public class HomeController implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		List<User> listF = connect.findAllUser();
-		if (!listF.isEmpty()) {
-			showListUser(listF);
-			for (User user : listF)
-				if (!u.getUsername().equals(user.getUsername())) {
-					friend = user;
-					break;
-				}
-			showListMessage(friend);
-		}
-		// liên tục nhận tin nhắn về
-		t.start();
-		// sư kiên khi chọn items của listFriend
+//		List<User> listF = connect.findAllUser();
+//		if (!listF.isEmpty()) {
+//			showListUser(listF);
+//			for (User user : listF)
+//				if (!u.getUsername().equals(user.getUsername())) {
+//					friend = user;
+//					break;
+//				}
+//			showListMessage(friend);
+//		}
+//		// liên tục nhận tin nhắn về
+//		t.start();
+//		// sư kiên khi chọn items của listFriend
 		listFriend.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent arg0) {
-				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
-				User check = connect.searchByName(l.getText());
-				if (check != null) {
-					friend = check;
-					showListMessage(friend);
-				}
+//				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
+//				User check = connect.searchByName(l.getText());
+//				if (check != null) {
+//					friend = check;
+//					showListMessage(friend);
+//				}
 			}
 		});
-		// sự kiện nhấn enter thì kết thúc tin nhắn
+//		// sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
-			KeyCode kc = event.getCode();
-			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
-				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
-				connect.sendMessage(m);// truyền đến sever
-				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
-				insertMessage(listMessage.getItems().size(), m);
-				enterMessage.setText("");
-			}
+//			KeyCode kc = event.getCode();
+//			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
+//				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
+//				connect.sendMessage(m);// truyền đến sever
+//				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
+//				insertMessage(listMessage.getItems().size(), m);
+//				enterMessage.setText("");
+//			}
 		});
 	}
-
+//
 	@FXML
 	public void clickIcon() {
-		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
-		m.setIcon("/like.png");
-		connect.sendMessage(m);
-		u.addMessageToDatabase(m);
-		insertMessage(listMessage.getItems().size(), m);
+//		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
+//		m.setIcon("/like.png");
+//		connect.sendMessage(m);
+//		u.addMessageToDatabase(m);
+//		insertMessage(listMessage.getItems().size(), m);
 	}
 	@FXML
 	public void chooseImage() {//xử lí sự kiện chèn hình ảnh
-		FileChooser fileChooser = new FileChooser();
-		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
-		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
-		connect.sendMessage(m);
-		u.addMessageToDatabase(m);
-		insertMessage(listMessage.getItems().size(), m);
+//		FileChooser fileChooser = new FileChooser();
+//		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
+//		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
+//		connect.sendMessage(m);
+//		u.addMessageToDatabase(m);
+//		insertMessage(listMessage.getItems().size(), m);
 	}
-
-	class thread extends Thread {
-		public void run() {
-			while (true) {
-				try {
-					while (!ConnectToServer.listMess.isEmpty()) {
-						insertMessage(listMessage.getItems().size(),ConnectToServer.listMess.poll());
-					}
-					sleep(1000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
-	}
+//
+//	class thread extends Thread {
+//		public void run() {
+//			while (true) {
+//				try {
+//					while (!ConnectToServer.listMess.isEmpty()) {
+//						insertMessage(listMessage.getItems().size(),ConnectToServer.listMess.poll());
+//					}
+//					sleep(1000);
+//				} catch (InterruptedException e1) {
+//					e1.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 
 	@SuppressWarnings("deprecation")
 	public void setStage(Stage stage) {
 		stage.setOnCloseRequest(e -> {
-			try {
-				c.closeClient();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			t.stop();
+//			try {
+//				client.closeClient();
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
+//			t.stop();
 		});
 
 	}

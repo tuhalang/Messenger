@@ -1,6 +1,5 @@
 package login;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -23,7 +22,6 @@ import javafx.stage.Stage;
 import model.Client;
 import model.User;
 import register.RegisterController;
-import service.ConnectToServer;
 
 public class LogInController implements Initializable {
 	@FXML
@@ -110,11 +108,7 @@ public class LogInController implements Initializable {
 				stage.setScene(scene);
 				stage.setResizable(false);
 				stage.setOnCloseRequest(e->{
-//					try {
-//						client.closeClient();
-//					} catch (IOException e1) {
-//						e1.printStackTrace();
-//					}
+				
 				});
 				controller.setStage(stage);
 				stage.show();
