@@ -87,7 +87,10 @@ public class Client {
 	public void receive(HomeController controller) {
 		Handle.receive(this,controller);
 	}
-
+	
+	public void receivePretreatment() {
+		Handle.receivePretreatment(this);
+	}
 	public boolean isValid() {
 		return valid;
 	}

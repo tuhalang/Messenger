@@ -91,6 +91,7 @@ public class RegisterController implements Initializable {
 			ObjectMapper mapper=new ObjectMapper();
 			try {
 				client.send("2", mapper.writeValueAsString(u));
+				client.receivePretreatment();
 			} catch (JsonProcessingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -101,7 +102,6 @@ public class RegisterController implements Initializable {
 				alert.setContentText("Create successful!");
 				alert.showAndWait();
 				try {
-					client.setUser(u);
 					HomeController controller = new HomeController(client.getUser(), client);
 					FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
 					loader.setController(controller);

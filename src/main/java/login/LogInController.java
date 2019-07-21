@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import model.Client;
 import model.User;
 import register.RegisterController;
+import service.impl.Handle;
 
 public class LogInController implements Initializable {
 	@FXML
@@ -67,13 +68,6 @@ public class LogInController implements Initializable {
 				Pane root = loader.load();
 				Scene scene = new Scene(root, 345, 460);
 				stage.setScene(scene);
-				stage.setOnCloseRequest(e->{
-//					try {
-//						//client.closeClient();
-//					} catch (IOException e1) {
-//						e1.printStackTrace();
-//					}
-				});
 				stage.setResizable(false);
 				stage.show();
 			} catch (Exception e) {
@@ -91,25 +85,22 @@ public class LogInController implements Initializable {
 		ObjectMapper mapper = new ObjectMapper();	
 		try {
 			client.send("1", mapper.writeValueAsString(user));
+			client.receivePretreatment();
 		} catch (JsonProcessingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
 		if (client.isValid()) {
 			System.out.println("login thanh cong");
 			try {
 				Stage stage=new Stage();
-				HomeController controller = new HomeController(user,client);
+				HomeController controller = new HomeController(client.getUser(),client);
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/Home.fxml"));
 				loader.setController(controller);
 				HBox layout = loader.load();
 				Scene scene = new Scene(layout, 767, 449);
 				stage.setScene(scene);
 				stage.setResizable(false);
-				stage.setOnCloseRequest(e->{
-					//TODO
-				});
 				controller.setStage(stage);
 				stage.show();
 			} catch (Exception e) {

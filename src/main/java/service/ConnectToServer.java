@@ -27,6 +27,7 @@ public class ConnectToServer {
 
 	public List<User> findAllUser() {
 		client.send("5", "");
+		client.receivePretreatment();
 		if (client.getAllUser() != null)
 			return client.getAllUser();
 		else
@@ -34,12 +35,12 @@ public class ConnectToServer {
 	}
 
 	public User searchByName(String name) {
-		System.out.println(name);
 		ObjectMapper mapper=new ObjectMapper();
 		try {
 			Key key = new Key();
 			key.setKey(name);
 			client.send("4", mapper.writeValueAsString(key));
+			client.receivePretreatment();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,7 +58,5 @@ public class ConnectToServer {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-	}
-	public void receiveMessage(Message m) {
 	}
 }

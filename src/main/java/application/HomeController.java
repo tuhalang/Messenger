@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -48,7 +49,7 @@ public class HomeController implements Initializable {
 	@FXML
 	private ImageView icon = new ImageView();
 	@FXML
-	private ImageView chooseImage=new ImageView();
+	private ImageView chooseImage = new ImageView();
 
 	private static final int MAX_MESSAGES = 20;
 	private static final int DISPLAYED_MESSAGES = 8;
@@ -61,8 +62,8 @@ public class HomeController implements Initializable {
 
 	private User friend = null;
 	FileReader fr = null;
-	ConnectToServer connect=new ConnectToServer();
-	//thread t = new thread();
+	ConnectToServer connect = new ConnectToServer();
+	// thread t = new thread();
 	long numberOfMessage = 0;
 
 	public HomeController() {
@@ -213,7 +214,8 @@ public class HomeController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		List<User> listF = connect.findAllUser();
-		if (listF!=null) System.out.println("success");
+		if (listF != null)
+			System.out.println("success");
 		if (!listF.isEmpty()) {
 			showListUser(listF);
 			for (User user : listF)
@@ -221,7 +223,10 @@ public class HomeController implements Initializable {
 					friend = user;
 					break;
 				}
-			showListMessage(friend);
+			if (friend != null) {
+				System.out.println(friend.getUserId());
+				showListMessage(friend);
+			}
 		}
 //		// liên tục nhận tin nhắn về
 //		t.start();
@@ -238,10 +243,10 @@ public class HomeController implements Initializable {
 				}
 			}
 		});
-//		// sự kiện nhấn enter thì kết thúc tin nhắn
+//		sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
 			KeyCode kc = event.getCode();
-			if (kc == KeyCode.ENTER && friend != null && enterMessage.getText() != "") {
+			if (kc == KeyCode.ENTER && friend != null && !enterMessage.getText().equals("")) {
 				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
 				connect.sendMessage(m);// truyền đến sever
 				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
@@ -251,19 +256,21 @@ public class HomeController implements Initializable {
 		});
 		client.receive(this);
 	}
+
 //
 	@FXML
 	public void clickIcon() {
-//		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
-//		m.setIcon("/like.png");
-//		connect.sendMessage(m);
-//		u.addMessageToDatabase(m);
-//		insertMessage(listMessage.getItems().size(), m);
+		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
+		m.setIcon("/like.png");
+		connect.sendMessage(m);
+		u.addMessageToDatabase(m);
+		insertMessage(listMessage.getItems().size(), m);
 	}
+
 	@FXML
-	public void chooseImage() {//xử lí sự kiện chèn hình ảnh
+	public void chooseImage() {// xử lí sự kiện chèn hình ảnh
 		FileChooser fileChooser = new FileChooser();
-		File file=fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
+		File file = fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
 		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
 		connect.sendMessage(m);
 		u.addMessageToDatabase(m);
@@ -273,13 +280,18 @@ public class HomeController implements Initializable {
 	@SuppressWarnings("deprecation")
 	public void setStage(Stage stage) {
 		stage.setOnCloseRequest(e -> {
-			//TODO
+			// TODO
 		});
 
 	}
-	public void addM(Message m) {
-		u.addMessageToDatabase(m);
-		insertMessage(listMessage.getItems().size(), m);
+
+	public synchronized void addM(Message m) {
+		Platform.runLater(() -> {
+			u.addMessageToDatabase(m);
+			System.out.println(m.getContent() + "test");
+			insertMessage(listMessage.getItems().size(), m);
+		});
+
 	}
 
 }

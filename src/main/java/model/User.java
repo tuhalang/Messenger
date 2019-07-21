@@ -113,7 +113,7 @@ public class User implements Serializable {
 		long size=getSizeListMessage(this.getUserId(), friend.getUserId());
 		try {
 			MongoClient mongo = connectMongodb.getMongoClient_1();
-			DB db = (DB) mongo.getDB("demo");
+			DB db = (DB) mongo.getDB("messenger");
 			DBCollection dept = db.getCollection("message");
 			List<DBObject> case1=new ArrayList<DBObject>();
 			case1.add(new BasicDBObject("sourceId", this.getUserId()));
@@ -126,8 +126,8 @@ public class User implements Serializable {
 			ORcase.add(new BasicDBObject("$and",case2));
 			List<DBObject> criteria = new ArrayList<DBObject>();
 			criteria.add(new BasicDBObject("$or",ORcase));
-			criteria.add((DBObject) new BasicDBObject("id", new BasicDBObject("$lte", size-numberOfMessage)));
-			criteria.add((DBObject) new BasicDBObject("id", new BasicDBObject("$gte", size-numberOfMessage-19)));
+			criteria.add((DBObject) new BasicDBObject("messageId", new BasicDBObject("$lte", size-numberOfMessage)));
+			criteria.add((DBObject) new BasicDBObject("messageId", new BasicDBObject("$gte", size-numberOfMessage-19)));
 			DBCursor cursor = dept.find(new BasicDBObject("$and", criteria));
 			while (cursor.hasNext()) {
 				DBObject rs = cursor.next();
@@ -146,10 +146,10 @@ public class User implements Serializable {
 		try {
 			long size = getSizeListMessage(m.getSourceId(),m.getTargetId());
 			MongoClient mongo = connectMongodb.getMongoClient_1();
-			DB db = (DB) mongo.getDB("demo");
+			DB db = (DB) mongo.getDB("messenger");
 			DBCollection dept = db.getCollection("message");
 			BasicDBObject document = new BasicDBObject();
-			document.put("id", size+1);
+			document.put("messageId", size+1);
 			document.put("sourceId", m.getSourceId());
 			document.put("targetId", m.getTargetId());
 			document.put("icon",m.getIcon());
@@ -164,7 +164,7 @@ public class User implements Serializable {
 	public long getSizeListMessage(long sourceId,long targetId) {
 		try {
 			MongoClient mongo = connectMongodb.getMongoClient_1();
-			DB db = (DB) mongo.getDB("demo");
+			DB db = (DB) mongo.getDB("messenger");
 			DBCollection dept = db.getCollection("message");
 			List<DBObject> case1=new ArrayList<DBObject>();
 			case1.add(new BasicDBObject("sourceId", sourceId));
