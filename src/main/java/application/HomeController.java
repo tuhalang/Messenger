@@ -63,8 +63,8 @@ public class HomeController implements Initializable {
 	private User friend = null;
 	FileReader fr = null;
 	ConnectToServer connect = new ConnectToServer();
-	// thread t = new thread();
 	long numberOfMessage = 0;
+	private String friend_wait = null;
 
 	public HomeController() {
 		super();
@@ -131,7 +131,6 @@ public class HomeController implements Initializable {
 		numberOfMessage += listM.size();
 	}
 
-	// Cái tên nói lên tất cả
 	public void insertMessage(long n, Message m) {
 		BorderPane bp = new BorderPane();
 		if (m == null) {
@@ -228,28 +227,22 @@ public class HomeController implements Initializable {
 				showListMessage(friend);
 			}
 		}
-//		// liên tục nhận tin nhắn về
-//		t.start();
-//		// sư kiên khi chọn items của listFriend
+		// sư kiên khi chọn items của listFriend
 		listFriend.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent arg0) {
 				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
-				User check = connect.searchByName(l.getText());
-				if (check != null) {
-					friend = check;
-					showListMessage(friend);
-				}
+				friend_wait = l.getText();
+				connect.searchByName(l.getText());
 			}
 		});
-//		sự kiện nhấn enter thì kết thúc tin nhắn
 		enterMessage.setOnKeyPressed(event -> {
 			KeyCode kc = event.getCode();
 			if (kc == KeyCode.ENTER && friend != null && !enterMessage.getText().equals("")) {
 				Message m = new Message(u.getUserId(), friend.getUserId(), enterMessage.getText(), "");
-				connect.sendMessage(m);// truyền đến sever
-				u.addMessageToDatabase(m);// Lưu dữ liệu vào database
+				connect.sendMessage(m);
+				u.addMessageToDatabase(m);
 				insertMessage(listMessage.getItems().size(), m);
 				enterMessage.setText("");
 			}
@@ -257,7 +250,6 @@ public class HomeController implements Initializable {
 		client.receive(this);
 	}
 
-//
 	@FXML
 	public void clickIcon() {
 		Message m = new Message(u.getUserId(), friend.getUserId(), "", "");
@@ -277,21 +269,27 @@ public class HomeController implements Initializable {
 		insertMessage(listMessage.getItems().size(), m);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void setStage(Stage stage) {
-		stage.setOnCloseRequest(e -> {
-			// TODO
-		});
-
-	}
-
 	public synchronized void addM(Message m) {
 		Platform.runLater(() -> {
-			u.addMessageToDatabase(m);
-			System.out.println(m.getContent() + "test");
-			insertMessage(listMessage.getItems().size(), m);
+			if (friend != null && m.getTargetId() == u.getUserId()) {
+				u.addMessageToDatabase(m);
+				System.out.println(m.getContent() + "test");
+				insertMessage(listMessage.getItems().size(), m);
+			}
 		});
-
 	}
 
+	public synchronized void changeFriend(List<User> users) {
+		Platform.runLater(() -> {
+			if (friend_wait != null) {
+				if (users != null)
+					for (User u : users)
+						if (u.getUsername().equals(friend_wait)) {
+							friend = u;
+							showListMessage(friend);
+							break;
+						}
+			}
+		});
+	}
 }

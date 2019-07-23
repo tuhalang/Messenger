@@ -47,13 +47,6 @@ public class Client {
 		} catch (IOException e) {
 			logger.severe("Couldn't get I/O for the connection to " + serverHost);
 		} finally {
-//			if (outToServer != null) {
-//				try {
-//					outToServer.close();
-//				} catch (IOException e) {
-//					logger.severe(e.getMessage());
-//				}
-//			}
 		}
 	}
 

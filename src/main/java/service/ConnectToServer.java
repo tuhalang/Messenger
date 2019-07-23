@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import application.HomeController;
+import javafx.application.Platform;
 import model.Client;
 import model.Key;
 import model.Message;
@@ -16,7 +17,7 @@ public class ConnectToServer {
 
 	private Client client = null;
 	ObjectMapper mapper = new ObjectMapper();
-	
+
 	public Client getClient() {
 		return client;
 	}
@@ -34,25 +35,20 @@ public class ConnectToServer {
 			return null;
 	}
 
-	public User searchByName(String name) {
-		ObjectMapper mapper=new ObjectMapper();
+	public void searchByName(String name) {
+		ObjectMapper mapper = new ObjectMapper();
 		try {
 			Key key = new Key();
 			key.setKey(name);
 			client.send("4", mapper.writeValueAsString(key));
-			client.receivePretreatment();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if (client.getSearchUser()!=null)
-			return client.getSearchUser().get(0);
-		else
-			return null;
 	}
 
 	public void sendMessage(Message m) {
-		ObjectMapper mapper=new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		try {
 			client.send("3", mapper.writeValueAsString(m));
 		} catch (JsonProcessingException e) {

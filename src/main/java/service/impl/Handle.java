@@ -44,6 +44,12 @@ public class Handle {
 							System.out.println("message to you: " + message);
 							ObjectMapper mapper = new ObjectMapper();
 							controller.addM(mapper.readValue(message.substring(1), Message.class));
+						}else if (message != null && message.startsWith("4")) {
+							ObjectMapper mapper = new ObjectMapper();
+							List<User> users = mapper.readValue(message.substring(1), new TypeReference<List<User>>() {
+							});
+							client.setSearchUser(users);
+							controller.changeFriend(users);
 						}
 						if (message != null && !message.equals(""))
 							System.out.println(message);
@@ -90,12 +96,13 @@ public class Handle {
 					} else {
 						// TODO decode error
 					}
-					if (response != null && response.startsWith("4")) {
-						ObjectMapper mapper = new ObjectMapper();
-						List<User> user = mapper.readValue(response.substring(1), new TypeReference<List<User>>() {
-						});
-						client.setSearchUser(user);
-					}
+//					if (response != null && response.startsWith("4")) {
+//						ObjectMapper mapper = new ObjectMapper();
+//						List<User> users = mapper.readValue(response.substring(1), new TypeReference<List<User>>() {
+//						});
+//						if (users!=null) for (User u:users) System.out.println(u); else System.out.println("No");
+//						client.setSearchUser(users);
+//					}
 					if (response != null && response.startsWith("5")) {
 						// TODO decode message
 						ObjectMapper mapper = new ObjectMapper();
@@ -111,7 +118,6 @@ public class Handle {
 					break;
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

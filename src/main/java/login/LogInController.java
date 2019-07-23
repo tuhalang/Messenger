@@ -101,7 +101,6 @@ public class LogInController implements Initializable {
 				Scene scene = new Scene(layout, 767, 449);
 				stage.setScene(scene);
 				stage.setResizable(false);
-				controller.setStage(stage);
 				stage.show();
 			} catch (Exception e) {
 				e.printStackTrace();
