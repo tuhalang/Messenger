@@ -69,6 +69,9 @@ public class LogInController implements Initializable {
 				Scene scene = new Scene(root, 345, 460);
 				stage.setScene(scene);
 				stage.setResizable(false);
+				stage.setOnCloseRequest(e->{
+					System.exit(0);
+				});
 				stage.show();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -101,6 +104,9 @@ public class LogInController implements Initializable {
 				Scene scene = new Scene(layout, 767, 449);
 				stage.setScene(scene);
 				stage.setResizable(false);
+				stage.setOnCloseRequest(e->{
+					System.exit(0);
+				});
 				stage.show();
 			} catch (Exception e) {
 				e.printStackTrace();

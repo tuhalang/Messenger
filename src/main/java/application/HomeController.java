@@ -1,13 +1,21 @@
 package application;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -162,15 +170,21 @@ public class HomeController implements Initializable {
 			l.setWrapText(true);
 			Circle mycircle;
 			ImageView image = null;
-			if (!m.getImage().equals("")) {
-				image = new ImageView(new Image(m.getImage()));
-				image.maxHeight(MAX_HEIGHT_IMAGE);
-				image.maxWidth(MAX_WIDTH_IMAGE);
-				image.setPreserveRatio(true);
-				if (image.maxHeight(MAX_HEIGHT_IMAGE) > MAX_HEIGHT_IMAGE)
-					image.setFitHeight(MAX_HEIGHT_IMAGE);
-				if (image.maxWidth(MAX_WIDTH_IMAGE) > MAX_WIDTH_IMAGE)
-					image.setFitWidth(MAX_WIDTH_IMAGE);
+			if (m!=null || !m.getImage().equals("")) {
+				byte[] imgBytes = Base64.getDecoder().decode(m.getImage());
+				try {
+					BufferedImage bufImg = ImageIO.read(new ByteArrayInputStream(imgBytes));
+					image = new ImageView(SwingFXUtils.toFXImage(bufImg, null));
+					image.maxHeight(MAX_HEIGHT_IMAGE);
+					image.maxWidth(MAX_WIDTH_IMAGE);
+					image.setPreserveRatio(true);
+					if (image.maxHeight(MAX_HEIGHT_IMAGE) > MAX_HEIGHT_IMAGE)
+						image.setFitHeight(MAX_HEIGHT_IMAGE);
+					if (image.maxWidth(MAX_WIDTH_IMAGE) > MAX_WIDTH_IMAGE)
+						image.setFitWidth(MAX_WIDTH_IMAGE);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			if (m.getSourceId() == friend.getUserId()) {
 				l.setStyle("-fx-background-radius:10;-fx-background-color:#F8F8FF;");
@@ -233,8 +247,10 @@ public class HomeController implements Initializable {
 			@Override
 			public void handle(MouseEvent arg0) {
 				Label l = (Label) listFriend.getSelectionModel().getSelectedItem().getChildren().get(1);
-				friend_wait = l.getText();
-				connect.searchByName(l.getText());
+				if (!l.getText().equals("")) {
+					friend_wait = l.getText();
+					connect.searchByName(l.getText());
+				}
 			}
 		});
 		enterMessage.setOnKeyPressed(event -> {
@@ -260,10 +276,12 @@ public class HomeController implements Initializable {
 	}
 
 	@FXML
-	public void chooseImage() {// xử lí sự kiện chèn hình ảnh
+	public void chooseImage() throws IOException {// xử lí sự kiện chèn hình ảnh
 		FileChooser fileChooser = new FileChooser();
 		File file = fileChooser.showOpenDialog(chooseImage.getScene().getWindow());
-		Message m = new Message(u.getUserId(), friend.getUserId(), "", file.getPath());
+		byte[] fileContent = FileUtils.readFileToByteArray(new File(file.getPath()));
+		String encodedString = Base64.getEncoder().encodeToString(fileContent);
+		Message m = new Message(u.getUserId(), friend.getUserId(), "", encodedString);
 		connect.sendMessage(m);
 		u.addMessageToDatabase(m);
 		insertMessage(listMessage.getItems().size(), m);

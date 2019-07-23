@@ -110,6 +110,9 @@ public class RegisterController implements Initializable {
 					Stage stage = new Stage();
 					stage.setScene(scene);
 					stage.setResizable(false);
+					stage.setOnCloseRequest(e->{
+						System.exit(0);
+					});
 					stage.show();
 				} catch (Exception e) {
 					e.printStackTrace();
